@@ -10,20 +10,21 @@ export const ETSY_ELIGIBLE_CATEGORIES: Set<string> = new Set([
   // Jewelry — Etsy's #1 physical product category (38% US e-commerce GMV)
   'jewelry', 'necklaces', 'earrings', 'rings', 'bracelets', 'anklets',
   'fashion jewelry', 'pendant necklaces', 'stud earrings', 'hoop earrings',
-  'chain necklaces', 'charm bracelets',
+  'chain necklaces', 'charm bracelets', 'fashion bracelets',
 
   // Bags & Purses
   'bags', 'handbags', 'backpacks', 'wallets', 'crossbody bags', 'tote bags',
   'clutches', 'coin purses', 'waist packs', 'shoulder bags', 'messenger bags',
+  'fashion wallets',
 
   // Accessories — Hair, Scarves, Hats
   'hair accessories', 'hair clips', 'hair claws', 'headbands', 'scrunchies',
   'scarves', 'hats', 'beanies', 'caps', 'bucket hats', 'sun hats',
-  'winter hats', 'silk scarves', 'bandanas',
+  'winter hats', 'silk scarves', 'bandanas', 'hair accessories set',
 
   // Eyewear
   'sunglasses', 'eyewear', 'reading glasses', 'blue light glasses',
-  'fashion glasses',
+  'fashion glasses', 'polarized sunglasses', 'optical frames',
 
   // Watches
   'watches', 'quartz watches', 'couple watches', 'digital watches',
@@ -32,6 +33,10 @@ export const ETSY_ELIGIBLE_CATEGORIES: Set<string> = new Set([
   // Belts
   'belts', 'leather belts', 'canvas belts', 'chain belts',
   'waist belts', 'dress belts',
+
+  // Shoes — strong Etsy category
+  'womens fashion shoes', 'mens casual shoes', 'womens shoes', 'mens shoes',
+  'sandals', 'flats', 'loafers', 'boots', 'sneakers',
 
   // Socks & Gloves (low-risk accessories)
   'socks', 'gloves', 'mittens', 'winter gloves', 'fashion socks',
@@ -83,7 +88,9 @@ export const CATEGORY_TAXONOMY_MAP: Record<string, { taxonomyId: number; etsyCat
 
   // Eyewear
   'sunglasses':         { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Sunglasses' },
+  'polarized sunglasses': { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Sunglasses' },
   'eyewear':            { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear' },
+  'optical frames':     { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyeglasses' },
 
   // Watches
   'watches':            { taxonomyId: 0, etsyCategory: 'Jewelry > Watches' },
@@ -97,9 +104,22 @@ export const CATEGORY_TAXONOMY_MAP: Record<string, { taxonomyId: number; etsyCat
   'leather belts':      { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders > Belts' },
   'chain belts':        { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders > Belts' },
 
+  // Shoes
+  'womens fashion shoes': { taxonomyId: 0, etsyCategory: 'Shoes > Women\'s Shoes' },
+  'mens casual shoes':  { taxonomyId: 0, etsyCategory: 'Shoes > Men\'s Shoes' },
+  'womens shoes':       { taxonomyId: 0, etsyCategory: 'Shoes > Women\'s Shoes' },
+  'mens shoes':         { taxonomyId: 0, etsyCategory: 'Shoes > Men\'s Shoes' },
+  'sandals':            { taxonomyId: 0, etsyCategory: 'Shoes > Sandals' },
+  'boots':              { taxonomyId: 0, etsyCategory: 'Shoes > Boots' },
+
   // Socks & Gloves
   'socks':              { taxonomyId: 0, etsyCategory: 'Clothing > Socks' },
   'gloves':             { taxonomyId: 0, etsyCategory: 'Accessories > Gloves & Mittens' },
+
+  // DB category variants (matching exact strings from 1688_source)
+  'fashion wallets':    { taxonomyId: 0, etsyCategory: 'Bags & Purses > Wallets & Money Clips' },
+  'fashion bracelets':  { taxonomyId: 0, etsyCategory: 'Jewelry > Bracelets' },
+  'hair accessories set': { taxonomyId: 0, etsyCategory: 'Accessories > Hair Accessories' },
 };
 
 export interface ProductRecord {

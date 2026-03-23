@@ -97,7 +97,7 @@ async function initializeSchema(): Promise<void> {
       CREATE TABLE IF NOT EXISTS products_en (
         id INT AUTO_INCREMENT PRIMARY KEY,
         product_id INT NOT NULL UNIQUE,
-        title_en VARCHAR(500),
+        title_en TEXT,
         description_en LONGTEXT,
         title_etsy VARCHAR(200) COMMENT 'Etsy-optimized title (max 140 chars)',
         description_etsy LONGTEXT COMMENT 'Etsy-optimized description with lifestyle sections',
@@ -115,7 +115,7 @@ async function initializeSchema(): Promise<void> {
       CREATE TABLE IF NOT EXISTS products_variants_en (
         id INT AUTO_INCREMENT PRIMARY KEY,
         product_id INT NOT NULL,
-        option_name_en VARCHAR(50),
+        option_name_en VARCHAR(200),
         option_value_en VARCHAR(200),
         option_value_zh VARCHAR(200),
         price_usd DECIMAL(10,2),

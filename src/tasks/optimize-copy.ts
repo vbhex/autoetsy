@@ -57,6 +57,15 @@ const TITLE_CATEGORY_PREFIXES: Record<string, string[]> = {
   'hair clips':     ['Trendy', 'Elegant', 'Pearl', 'Vintage-Style', 'Fashion'],
   scarves:          ['Soft', 'Lightweight', 'Versatile', 'Elegant', 'Cozy'],
   hats:             ['Stylish', 'Classic', 'Cozy', 'Trendy', 'Everyday'],
+  'womens fashion shoes': ['Elegant', 'Comfortable', 'Trendy', 'Stylish', 'Chic'],
+  'mens casual shoes': ['Classic', 'Comfortable', 'Everyday', 'Stylish', 'Versatile'],
+  'fashion wallets': ['Slim', 'Classic', 'Minimalist', 'Compact', 'Everyday'],
+  'fashion bracelets': ['Charm', 'Delicate', 'Layering', 'Adjustable', 'Beaded'],
+  'hair accessories set': ['Trendy', 'Elegant', 'Everyday', 'Statement', 'Chic'],
+  'polarized sunglasses': ['Retro', 'Classic', 'UV Protection', 'Polarized', 'Vintage-Style'],
+  'optical frames':   ['Lightweight', 'Classic', 'Retro', 'Fashion', 'Comfortable'],
+  'coin purses':      ['Compact', 'Cute', 'Everyday', 'Minimalist', 'Portable'],
+  'waist packs':      ['Versatile', 'Travel-Ready', 'Everyday', 'Sporty', 'Trendy'],
   sunglasses:       ['Retro', 'Classic', 'UV Protection', 'Fashion', 'Vintage-Style'],
   watches:          ['Elegant', 'Classic', 'Minimalist', 'Fashion', 'Everyday'],
   belts:            ['Classic', 'Versatile', 'Fashion', 'Adjustable', 'Everyday'],
@@ -71,19 +80,48 @@ const TITLE_CATEGORY_PREFIXES: Record<string, string[]> = {
 function optimizeTitle(titleEn: string, category: string): string {
   if (!titleEn) return '';
 
-  // Clean up common machine-translation artifacts
+  // Clean up common machine-translation and 1688 B2B artifacts
   let title = titleEn
     .replace(/\s+/g, ' ')
-    .replace(/^(new|hot|sale|fashion)\s+/i, '')
-    .replace(/\s+(new|hot sale|free shipping)$/i, '')
+    // Remove 1688 wholesale/B2B language
+    .replace(/manufacturer'?s?\s*direct\s*supply\s*(of)?/gi, '')
+    .replace(/cross[- ]?border\s*(exclusive\s*)?/gi, '')
+    .replace(/drop\s*shipping\s*/gi, '')
+    .replace(/wholesale\s*/gi, '')
+    .replace(/factory\s*direct\s*(sales?)?\s*/gi, '')
+    .replace(/best[- ]?selling\s*/gi, '')
+    .replace(/hot[- ]?selling\s*/gi, '')
+    .replace(/new\s*arrivals?\s*/gi, '')
+    .replace(/export\s*(quality\s*)?/gi, '')
+    .replace(/foreign\s*trade\s*/gi, '')
+    .replace(/large[- ]?scale\s*/gi, '')
+    .replace(/source\s*factory\s*/gi, '')
+    .replace(/supply\s*chain\s*/gi, '')
+    .replace(/one\s*piece\s*drop\s*ship(ping)?\s*/gi, '')
+    .replace(/european\s*and\s*american\s*(style\s*)?/gi, '')
+    .replace(/japanese\s*and\s*korean\s*(style\s*)?/gi, '')
+    .replace(/korean\s*version\s*(of\s*)?/gi, '')
+    .replace(/tiktok\s*/gi, '')
+    .replace(/douyin\s*/gi, '')
+    .replace(/plus[- ]?size\s+yeezy/gi, 'Plus-Size')
+    .replace(/\byeezy\b/gi, '')
+    // Remove leading/trailing connectors
+    .replace(/^(new|hot|sale|fashion|,)\s+/i, '')
+    .replace(/\s+(new|hot sale|free shipping|,)$/i, '')
+    .replace(/^[\s,]+|[\s,]+$/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
 
   // Capitalize each word
   title = title.replace(/\b\w/g, c => c.toUpperCase());
 
-  // Add category-specific lifestyle prefix if title doesn't already start with one
+  // Add category-specific lifestyle prefix
   const catKey = category?.toLowerCase() || '';
-  const prefixes = TITLE_CATEGORY_PREFIXES[catKey] || TITLE_CATEGORY_PREFIXES['jewelry'] || [];
+  let prefixes = TITLE_CATEGORY_PREFIXES[catKey];
+  if (!prefixes) {
+    const match = Object.keys(TITLE_CATEGORY_PREFIXES).find(k => catKey.includes(k) || k.includes(catKey));
+    prefixes = match ? TITLE_CATEGORY_PREFIXES[match] : TITLE_CATEGORY_PREFIXES['jewelry'] || [];
+  }
   const prefix = prefixes[Math.floor(Math.random() * prefixes.length)] || '';
 
   if (prefix && !title.toLowerCase().startsWith(prefix.toLowerCase())) {
@@ -178,6 +216,20 @@ function optimizeDescription(descEn: string, titleEn: string, specs: any, catego
       `• Couple matching sets\n` +
       `• Birthday & holiday gifts\n`
     );
+  } else if (['shoes', 'sandals', 'boots', 'loafers', 'flats'].some(c => catLower.includes(c))) {
+    sections.push(
+      `👟 PERFECT FOR\n` +
+      `• Everyday comfort & style\n` +
+      `• Work & casual outings\n` +
+      `• Gift for her or him\n`
+    );
+  } else if (['sunglasses', 'eyewear', 'optical', 'glasses'].some(c => catLower.includes(c))) {
+    sections.push(
+      `🕶️ GREAT FOR\n` +
+      `• UV protection & style\n` +
+      `• Outdoor activities & travel\n` +
+      `• Everyday fashion accessory\n`
+    );
   }
 
   // Care instructions
@@ -220,6 +272,15 @@ const CATEGORY_TAGS: Record<string, string[]> = {
   belts:            ['belt', 'leather belt', 'fashion belt', 'dress belt', 'waist belt'],
   socks:            ['socks', 'cozy socks', 'fun socks', 'novelty socks', 'cotton socks'],
   gloves:           ['gloves', 'winter gloves', 'touchscreen gloves', 'warm gloves', 'fashion gloves'],
+  'womens fashion shoes': ['womens shoes', 'fashion shoes', 'heels', 'flats', 'gift for her'],
+  'mens casual shoes': ['mens shoes', 'casual shoes', 'loafers', 'comfortable shoes', 'everyday shoes'],
+  'fashion wallets':  ['wallet', 'slim wallet', 'card holder', 'minimalist wallet', 'gift wallet'],
+  'fashion bracelets': ['bracelet', 'charm bracelet', 'beaded bracelet', 'friendship bracelet', 'gift bracelet'],
+  'hair accessories set': ['hair accessory', 'hair clip set', 'hair jewelry', 'trendy hair', 'gift for her'],
+  'polarized sunglasses': ['sunglasses', 'polarized', 'UV protection', 'retro sunglasses', 'fashion eyewear'],
+  'optical frames':   ['eyeglasses', 'optical frames', 'blue light', 'fashion glasses', 'reading glasses'],
+  'coin purses':      ['coin purse', 'small wallet', 'card holder', 'mini purse', 'cute wallet'],
+  'waist packs':      ['fanny pack', 'belt bag', 'waist bag', 'travel bag', 'crossbody bag'],
 };
 
 /**
@@ -230,8 +291,13 @@ function generateTags(titleEn: string, category: string, specs: any): string[] {
   const tags: Set<string> = new Set();
 
   // 1. Category-specific base tags (5 max)
+  // Try exact match first, then partial match on category keywords
   const catKey = category?.toLowerCase() || '';
-  const catTags = CATEGORY_TAGS[catKey] || CATEGORY_TAGS['jewelry'] || [];
+  let catTags = CATEGORY_TAGS[catKey];
+  if (!catTags) {
+    const match = Object.keys(CATEGORY_TAGS).find(k => catKey.includes(k) || k.includes(catKey));
+    catTags = match ? CATEGORY_TAGS[match] : CATEGORY_TAGS['jewelry'];
+  }
   for (const tag of catTags.slice(0, 5)) {
     if (tag.length <= 20) tags.add(tag);
   }
