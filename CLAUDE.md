@@ -22,7 +22,7 @@ API auth → `setup-auth.js` (ping + OAuth login) → tokens in `data/etsy-token
 - **Input**: `1688_source.products` with `status IN ('ae_enriched', 'ae_exported')` + `authorized_products`
 - **Output**: Rows in `etsy_autostore.products` with `status = 'imported'`
 - **Non-destructive**: Does NOT update status in `1688_source` (same product can be on AliExpress + Etsy)
-- **Filter**: Only Etsy-eligible categories (jewelry, accessories, bags, watches, eyewear, belts)
+- **Filter**: Only **Phase 1 brand-safe categories** from `documents/BRAND_SAFE_CATEGORIES.md`
 
 ```bash
 node dist/tasks/import-from-1688source.js
@@ -103,6 +103,7 @@ After approval, put the **keystring** and **shared secret** in `.env` and run `s
 
 ## Etsy-Specific Rules
 
+- **Phase 1 only**: Import/list only documented brand-safe categories. Do NOT source hats, watches, shoes, wallets, belts, sunglasses, optical frames, or other Phase 2 categories for Etsy unless the user explicitly approves Phase 2.
 - `who_made`: "someone_else" (products made by another company)
 - `when_made`: "2020_2026"
 - Titles: max 140 characters, keyword-front-loaded
@@ -111,6 +112,8 @@ After approval, put the **keystring** and **shared secret** in `.env` and run `s
 - Fees: $0.20/listing (4-month renew) + 6.5% transaction + ~3% payment processing
 
 ## Blue Ocean Categories
+
+Phase 1 enforcement for Etsy comes from `documents/BRAND_SAFE_CATEGORIES.md`, not the broader historical "Etsy-friendly" category list below.
 
 See `documents/etsy-store/etsy-blue-ocean-categories.md`
 

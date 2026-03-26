@@ -1,45 +1,120 @@
 /**
- * Etsy-eligible 1688 categories and their Etsy taxonomy mapping.
+ * Etsy Phase 1 brand-safe categories only.
  *
- * Taxonomy IDs will be populated once we fetch the Etsy taxonomy tree
- * via the API (setup-taxonomy task). For now, store category names
- * and placeholder IDs — the import task uses this to filter eligible products.
+ * Source of truth: documents/BRAND_SAFE_CATEGORIES.md
+ *
+ * IMPORTANT:
+ * - Etsy must NOT import broader "Etsy-friendly" categories like hats, watches,
+ *   eyewear, wallets, belts, shoes, or finished fashion jewelry during Phase 1.
+ * - This set is intentionally narrower than "things that might sell on Etsy".
+ * - Only categories that fit the documented brand-safe strategy belong here.
  */
 
-export const ETSY_ELIGIBLE_CATEGORIES: Set<string> = new Set([
-  // Jewelry — Etsy's #1 physical product category (38% US e-commerce GMV)
-  'jewelry', 'necklaces', 'earrings', 'rings', 'bracelets', 'anklets',
-  'fashion jewelry', 'pendant necklaces', 'stud earrings', 'hoop earrings',
-  'chain necklaces', 'charm bracelets', 'fashion bracelets',
+export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
+  // Phone cases / accessories
+  'phone cases',
+  'phone case',
+  'phone accessories',
+  'phone holders',
+  'phone straps',
 
-  // Bags & Purses
-  'bags', 'handbags', 'backpacks', 'wallets', 'crossbody bags', 'tote bags',
-  'clutches', 'coin purses', 'waist packs', 'shoulder bags', 'messenger bags',
-  'fashion wallets',
+  // DIY / craft supplies
+  'craft supplies',
+  'diy craft supplies',
+  'beads',
+  'buttons',
+  'lace',
+  'lace trim',
+  'ribbon',
+  'fabric',
 
-  // Accessories — Hair, Scarves, Hats
-  'hair accessories', 'hair clips', 'hair claws', 'headbands', 'scrunchies',
-  'scarves', 'hats', 'beanies', 'caps', 'bucket hats', 'sun hats',
-  'winter hats', 'silk scarves', 'bandanas', 'hair accessories set',
+  // Jewelry findings / components
+  'jewelry findings',
+  'jewelry components',
+  'jewelry supplies',
+  'diy jewelry materials',
 
-  // Eyewear
-  'sunglasses', 'eyewear', 'reading glasses', 'blue light glasses',
-  'fashion glasses', 'polarized sunglasses', 'optical frames',
+  // Hair accessories
+  'hair accessories',
+  'hair clips',
+  'hair claws',
+  'headbands',
+  'scrunchies',
+  'hair accessories set',
 
-  // Watches
-  'watches', 'quartz watches', 'couple watches', 'digital watches',
-  'wristwatches', 'fashion watches', 'vintage watches',
+  // Shoe accessories
+  'shoe accessories',
+  'insoles',
+  'shoelaces',
+  'shoe decorations',
+  'shoe charms',
 
-  // Belts
-  'belts', 'leather belts', 'canvas belts', 'chain belts',
-  'waist belts', 'dress belts',
+  // Sewing notions
+  'sewing notions',
+  'zippers',
+  'snaps',
+  'elastic',
+  'thread',
 
-  // Shoes — strong Etsy category
-  'womens fashion shoes', 'mens casual shoes', 'womens shoes', 'mens shoes',
-  'sandals', 'flats', 'loafers', 'boots', 'sneakers',
+  // Stickers / patches / iron-ons
+  'stickers',
+  'patches',
+  'iron-ons',
+  'embroidered patches',
 
-  // Socks & Gloves (low-risk accessories)
-  'socks', 'gloves', 'mittens', 'winter gloves', 'fashion socks',
+  // Keychains / bag charms
+  'keychains',
+  'bag charms',
+
+  // Candles / home fragrance
+  'candles',
+  'home fragrance',
+
+  // Storage / organizers
+  'storage',
+  'organizers',
+  'storage organizers',
+
+  // Pet accessories
+  'pet accessories',
+  'pet collars',
+  'pet toys',
+  'pet bows',
+
+  // Painting / art supplies
+  'art supplies',
+  'painting supplies',
+  'paint brushes',
+  'paint',
+  'canvas',
+
+  // Eyewear accessories
+  'eyewear accessories',
+  'glasses cases',
+  'glasses chains',
+  'nose pads',
+  'lens cloths',
+
+  // Watch accessories
+  'watch accessories',
+  'watch bands',
+  'watch boxes',
+  'watch repair tools',
+
+  // Scarf accessories
+  'scarf accessories',
+  'scarf rings',
+  'scarf clips',
+
+  // Disposable items
+  'disposable items',
+  'disposable masks',
+  'disposable slippers',
+
+  // Stationery
+  'stationery',
+  'washi tape',
+  'pen holders',
 ]);
 
 /**
@@ -47,79 +122,114 @@ export const ETSY_ELIGIBLE_CATEGORIES: Set<string> = new Set([
  * taxonomy_id is 0 = "fetch from API later" placeholder.
  */
 export const CATEGORY_TAXONOMY_MAP: Record<string, { taxonomyId: number; etsyCategory: string }> = {
-  // Jewelry
-  'jewelry':            { taxonomyId: 0, etsyCategory: 'Jewelry' },
-  'necklaces':          { taxonomyId: 0, etsyCategory: 'Jewelry > Necklaces' },
-  'earrings':           { taxonomyId: 0, etsyCategory: 'Jewelry > Earrings' },
-  'rings':              { taxonomyId: 0, etsyCategory: 'Jewelry > Rings' },
-  'bracelets':          { taxonomyId: 0, etsyCategory: 'Jewelry > Bracelets' },
-  'fashion jewelry':    { taxonomyId: 0, etsyCategory: 'Jewelry' },
-  'pendant necklaces':  { taxonomyId: 0, etsyCategory: 'Jewelry > Necklaces > Pendant Necklaces' },
-  'stud earrings':      { taxonomyId: 0, etsyCategory: 'Jewelry > Earrings > Stud Earrings' },
-  'hoop earrings':      { taxonomyId: 0, etsyCategory: 'Jewelry > Earrings > Hoop Earrings' },
-  'chain necklaces':    { taxonomyId: 0, etsyCategory: 'Jewelry > Necklaces > Chain Necklaces' },
-  'charm bracelets':    { taxonomyId: 0, etsyCategory: 'Jewelry > Bracelets > Charm Bracelets' },
-
-  // Bags & Purses
-  'bags':               { taxonomyId: 0, etsyCategory: 'Bags & Purses' },
-  'handbags':           { taxonomyId: 0, etsyCategory: 'Bags & Purses > Handbags' },
-  'backpacks':          { taxonomyId: 0, etsyCategory: 'Bags & Purses > Backpacks' },
-  'wallets':            { taxonomyId: 0, etsyCategory: 'Bags & Purses > Wallets & Money Clips' },
-  'crossbody bags':     { taxonomyId: 0, etsyCategory: 'Bags & Purses > Crossbody Bags' },
-  'tote bags':          { taxonomyId: 0, etsyCategory: 'Bags & Purses > Tote Bags' },
-  'clutches':           { taxonomyId: 0, etsyCategory: 'Bags & Purses > Clutches & Evening Bags' },
-  'waist packs':        { taxonomyId: 0, etsyCategory: 'Bags & Purses > Fanny Packs' },
-  'shoulder bags':      { taxonomyId: 0, etsyCategory: 'Bags & Purses > Shoulder Bags' },
-  'messenger bags':     { taxonomyId: 0, etsyCategory: 'Bags & Purses > Messenger Bags' },
-
-  // Accessories
+  // Hair accessories
   'hair accessories':   { taxonomyId: 0, etsyCategory: 'Accessories > Hair Accessories' },
   'hair clips':         { taxonomyId: 0, etsyCategory: 'Accessories > Hair Accessories > Hair Clips' },
   'hair claws':         { taxonomyId: 0, etsyCategory: 'Accessories > Hair Accessories > Hair Claws & Clips' },
   'headbands':          { taxonomyId: 0, etsyCategory: 'Accessories > Hair Accessories > Headbands' },
   'scrunchies':         { taxonomyId: 0, etsyCategory: 'Accessories > Hair Accessories > Scrunchies' },
-  'scarves':            { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps' },
-  'hats':               { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps' },
-  'beanies':            { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Winter Hats' },
-  'caps':               { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Baseball & Trucker Caps' },
-  'bucket hats':        { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Bucket Hats' },
-  'sun hats':           { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Sun Hats & Visors' },
-  'bandanas':           { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps > Bandanas' },
-
-  // Eyewear
-  'sunglasses':         { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Sunglasses' },
-  'polarized sunglasses': { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Sunglasses' },
-  'eyewear':            { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear' },
-  'optical frames':     { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyeglasses' },
-
-  // Watches
-  'watches':            { taxonomyId: 0, etsyCategory: 'Jewelry > Watches' },
-  'quartz watches':     { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Wrist Watches' },
-  'couple watches':     { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Wrist Watches' },
-  'digital watches':    { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Wrist Watches' },
-  'fashion watches':    { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Wrist Watches' },
-
-  // Belts
-  'belts':              { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders > Belts' },
-  'leather belts':      { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders > Belts' },
-  'chain belts':        { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders > Belts' },
-
-  // Shoes
-  'womens fashion shoes': { taxonomyId: 0, etsyCategory: 'Shoes > Women\'s Shoes' },
-  'mens casual shoes':  { taxonomyId: 0, etsyCategory: 'Shoes > Men\'s Shoes' },
-  'womens shoes':       { taxonomyId: 0, etsyCategory: 'Shoes > Women\'s Shoes' },
-  'mens shoes':         { taxonomyId: 0, etsyCategory: 'Shoes > Men\'s Shoes' },
-  'sandals':            { taxonomyId: 0, etsyCategory: 'Shoes > Sandals' },
-  'boots':              { taxonomyId: 0, etsyCategory: 'Shoes > Boots' },
-
-  // Socks & Gloves
-  'socks':              { taxonomyId: 0, etsyCategory: 'Clothing > Socks' },
-  'gloves':             { taxonomyId: 0, etsyCategory: 'Accessories > Gloves & Mittens' },
 
   // DB category variants (matching exact strings from 1688_source)
   'fashion wallets':    { taxonomyId: 0, etsyCategory: 'Bags & Purses > Wallets & Money Clips' },
   'fashion bracelets':  { taxonomyId: 0, etsyCategory: 'Jewelry > Bracelets' },
   'hair accessories set': { taxonomyId: 0, etsyCategory: 'Accessories > Hair Accessories' },
+
+  // Phone cases / accessories
+  'phone case':         { taxonomyId: 0, etsyCategory: 'Electronics & Accessories > Cases & Covers > Phone Cases' },
+  'phone cases':        { taxonomyId: 0, etsyCategory: 'Electronics & Accessories > Cases & Covers > Phone Cases' },
+  'phone accessories':  { taxonomyId: 0, etsyCategory: 'Electronics & Accessories > Phone Accessories' },
+  'phone holders':      { taxonomyId: 0, etsyCategory: 'Electronics & Accessories > Phone Accessories' },
+  'phone straps':       { taxonomyId: 0, etsyCategory: 'Electronics & Accessories > Phone Accessories' },
+
+  // Craft / DIY supplies
+  'craft supplies':     { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools' },
+  'diy craft supplies': { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools' },
+  'beads':              { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Beads, Gems & Cabochons' },
+  'buttons':            { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Buttons' },
+  'lace':               { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions > Trim' },
+  'lace trim':          { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions > Trim' },
+  'ribbon':             { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions > Trim' },
+  'fabric':             { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions > Fabric' },
+
+  // Jewelry findings / components
+  'jewelry findings':   { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Jewelry & Beauty Supplies > Jewelry Findings' },
+  'jewelry components': { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Jewelry & Beauty Supplies > Jewelry Findings' },
+  'jewelry supplies':   { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Jewelry & Beauty Supplies' },
+  'diy jewelry materials': { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Jewelry & Beauty Supplies' },
+
+  // Shoe accessories
+  'shoe accessories':   { taxonomyId: 0, etsyCategory: 'Accessories' },
+  'insoles':            { taxonomyId: 0, etsyCategory: 'Accessories' },
+  'shoelaces':          { taxonomyId: 0, etsyCategory: 'Accessories' },
+  'shoe decorations':   { taxonomyId: 0, etsyCategory: 'Accessories' },
+  'shoe charms':        { taxonomyId: 0, etsyCategory: 'Accessories' },
+
+  // Sewing notions
+  'sewing notions':     { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions' },
+  'zippers':            { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions' },
+  'snaps':              { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions' },
+  'elastic':            { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions' },
+  'thread':             { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions' },
+
+  // Stickers / patches / iron-ons
+  'stickers':           { taxonomyId: 0, etsyCategory: 'Paper & Party Supplies > Paper > Stickers, Labels & Tags' },
+  'patches':            { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions > Patches' },
+  'iron-ons':           { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions > Patches' },
+  'embroidered patches': { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Fabric & Notions > Patches' },
+
+  // Keychains / bag charms
+  'keychains':          { taxonomyId: 0, etsyCategory: 'Accessories > Keychains & Lanyards' },
+  'bag charms':         { taxonomyId: 0, etsyCategory: 'Accessories > Keychains & Lanyards' },
+
+  // Candles / home fragrance
+  'candles':            { taxonomyId: 0, etsyCategory: 'Home & Living > Home Fragrances > Candles' },
+  'home fragrance':     { taxonomyId: 0, etsyCategory: 'Home & Living > Home Fragrances' },
+
+  // Storage / organizers
+  'storage':            { taxonomyId: 0, etsyCategory: 'Home & Living > Storage & Organization' },
+  'organizers':         { taxonomyId: 0, etsyCategory: 'Home & Living > Storage & Organization' },
+  'storage organizers': { taxonomyId: 0, etsyCategory: 'Home & Living > Storage & Organization' },
+
+  // Pet accessories
+  'pet accessories':    { taxonomyId: 0, etsyCategory: 'Pet Supplies' },
+  'pet collars':        { taxonomyId: 0, etsyCategory: 'Pet Supplies > Pet Collars & Leashes' },
+  'pet toys':           { taxonomyId: 0, etsyCategory: 'Pet Supplies > Pet Toys' },
+  'pet bows':           { taxonomyId: 0, etsyCategory: 'Pet Supplies > Pet Clothing & Accessories' },
+
+  // Painting / art supplies
+  'art supplies':       { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Paints, Inks & Dyes' },
+  'painting supplies':  { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Paints, Inks & Dyes' },
+  'paint brushes':      { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Tools & Equipment' },
+  'paint':              { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Paints, Inks & Dyes' },
+  'canvas':             { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Canvas & Surfaces' },
+
+  // Eyewear accessories
+  'eyewear accessories': { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyewear Cases & Accessories' },
+  'glasses cases':      { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyewear Cases & Accessories' },
+  'glasses chains':     { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyewear Cases & Accessories' },
+  'nose pads':          { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyewear Cases & Accessories' },
+  'lens cloths':        { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyewear Cases & Accessories' },
+
+  // Watch accessories
+  'watch accessories':  { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Watch Bands & Straps' },
+  'watch bands':        { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Watch Bands & Straps' },
+  'watch boxes':        { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Watch Storage' },
+  'watch repair tools': { taxonomyId: 0, etsyCategory: 'Craft Supplies & Tools > Tools & Equipment' },
+
+  // Scarf accessories
+  'scarf accessories':  { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps > Scarf Rings & Clips' },
+  'scarf rings':        { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps > Scarf Rings & Clips' },
+  'scarf clips':        { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps > Scarf Rings & Clips' },
+
+  // Disposable items
+  'disposable items':   { taxonomyId: 0, etsyCategory: 'Bath & Beauty' },
+  'disposable masks':   { taxonomyId: 0, etsyCategory: 'Bath & Beauty' },
+  'disposable slippers': { taxonomyId: 0, etsyCategory: 'Bath & Beauty' },
+
+  // Stationery
+  'stationery':         { taxonomyId: 0, etsyCategory: 'Paper & Party Supplies' },
+  'washi tape':         { taxonomyId: 0, etsyCategory: 'Paper & Party Supplies > Paper > Stickers, Labels & Tags' },
+  'pen holders':        { taxonomyId: 0, etsyCategory: 'Home & Living > Office > Office Storage' },
 };
 
 export interface ProductRecord {
