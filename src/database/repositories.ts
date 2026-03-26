@@ -15,6 +15,21 @@ export async function getProductsByStatus(status: string, limit?: number): Promi
   return rows as any[];
 }
 
+/** Optimized copy ready, not yet linked to an Etsy listing. */
+export async function getOptimizedProductsWithoutEtsyListing(limit?: number): Promise<any[]> {
+  const p = await getPool();
+  const limitClause = limit ? `LIMIT ${Math.max(1, Math.floor(limit))}` : '';
+  const [rows] = await p.execute<RowDataPacket[]>(
+    `SELECT p.id, p.id_1688, p.status, p.url, p.title_zh, p.category, p.thumbnail_url
+     FROM products p
+     WHERE p.status = 'optimized'
+       AND (p.etsy_listing_id IS NULL OR p.etsy_listing_id = '')
+     ORDER BY p.id ASC
+     ${limitClause}`
+  );
+  return rows as any[];
+}
+
 export async function getProductEN(productId: number): Promise<any | null> {
   const p = await getPool();
   const [rows] = await p.execute<RowDataPacket[]>(

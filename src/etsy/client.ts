@@ -172,3 +172,135 @@ export function userIdFromAccessToken(accessToken: string): string {
   if (i <= 0) throw new Error('Invalid access_token format (expected user_id.token)');
   return accessToken.slice(0, i);
 }
+
+// ── Listing APIs (Open API v3) ───────────────────────────────────────────
+
+export function v3AuthHeaders(accessToken: string, apiKey: string, sharedSecret: string): Record<string, string> {
+  return {
+    'x-api-key': apiKeyHeader(apiKey, sharedSecret),
+    Authorization: `Bearer ${accessToken}`,
+  };
+}
+
+function firstNumber(obj: Record<string, unknown>, keys: string[]): number | undefined {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === 'number' && !Number.isNaN(v)) return v;
+    if (typeof v === 'string' && /^\d+$/.test(v)) return parseInt(v, 10);
+  }
+  return undefined;
+}
+
+/** https://developers.etsy.com/documentation/reference — list shop shipping profiles */
+export async function getShopShippingProfiles(
+  shopId: string | number,
+  accessToken: string,
+  apiKey: string,
+  sharedSecret: string
+): Promise<Array<Record<string, unknown>>> {
+  const { data, status } = await axios.get<Record<string, unknown>>(`${API_BASE}/shops/${shopId}/shipping-profiles`, {
+    headers: v3AuthHeaders(accessToken, apiKey, sharedSecret),
+    validateStatus: () => true,
+  });
+  if (status >= 400) {
+    throw new Error(`getShopShippingProfiles failed: ${status} ${JSON.stringify(data)}`);
+  }
+  const results = (data as { results?: unknown[] }).results;
+  return Array.isArray(results) ? (results as Array<Record<string, unknown>>) : [];
+}
+
+/** https://developers.etsy.com/documentation/reference — shop processing profiles */
+export async function getShopReadinessStateDefinitions(
+  shopId: string | number,
+  accessToken: string,
+  apiKey: string,
+  sharedSecret: string
+): Promise<Array<Record<string, unknown>>> {
+  const { data, status } = await axios.get<Record<string, unknown>>(
+    `${API_BASE}/shops/${shopId}/readiness-state-definitions`,
+    {
+      headers: v3AuthHeaders(accessToken, apiKey, sharedSecret),
+      validateStatus: () => true,
+    }
+  );
+  if (status >= 400) {
+    throw new Error(`getShopReadinessStateDefinitions failed: ${status} ${JSON.stringify(data)}`);
+  }
+  const results = (data as { results?: unknown[] }).results;
+  return Array.isArray(results) ? (results as Array<Record<string, unknown>>) : [];
+}
+
+export interface CreateDraftListingResult {
+  listing_id: number;
+  raw: Record<string, unknown>;
+}
+
+/** POST createDraftListing — price in smallest currency unit (e.g. USD cents). Pass URLSearchParams to repeat keys (e.g. tags). */
+export async function createDraftListing(
+  shopId: string | number,
+  formFields: URLSearchParams | Record<string, string | number | boolean | undefined>,
+  accessToken: string,
+  apiKey: string,
+  sharedSecret: string
+): Promise<CreateDraftListingResult> {
+  const body =
+    formFields instanceof URLSearchParams
+      ? formFields
+      : (() => {
+          const p = new URLSearchParams();
+          for (const [k, v] of Object.entries(formFields)) {
+            if (v === undefined || v === null) continue;
+            p.append(k, String(v));
+          }
+          return p;
+        })();
+  const { data, status } = await axios.post<Record<string, unknown>>(`${API_BASE}/shops/${shopId}/listings`, body.toString(), {
+    headers: {
+      ...v3AuthHeaders(accessToken, apiKey, sharedSecret),
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    validateStatus: () => true,
+  });
+  if (status >= 400) {
+    throw new Error(`createDraftListing failed: ${status} ${JSON.stringify(data)}`);
+  }
+  const listingObj = (data as { listing?: Record<string, unknown> }).listing;
+  const listing_id =
+    firstNumber(data, ['listing_id', 'listingId']) ??
+    (listingObj ? firstNumber(listingObj, ['listing_id', 'listingId']) : undefined) ??
+    (data.listing_id !== undefined ? Number(data.listing_id) : undefined);
+  if (listing_id == null || Number.isNaN(listing_id)) {
+    throw new Error(`createDraftListing: no listing_id in response ${JSON.stringify(data)}`);
+  }
+  return { listing_id, raw: data };
+}
+
+/**
+ * Upload a listing image (multipart). Uses fetch so Node can set multipart boundary.
+ * https://developers.etsy.com/documentation/reference#operation/uploadListingImage
+ */
+export async function uploadListingImage(
+  shopId: string | number,
+  listingId: string | number,
+  imageBytes: Buffer,
+  filename: string,
+  accessToken: string,
+  apiKey: string,
+  sharedSecret: string
+): Promise<void> {
+  const blob = new Blob([new Uint8Array(imageBytes)]);
+  const fd = new FormData();
+  fd.append('image', blob, filename || 'image.jpg');
+  const res = await fetch(`${API_BASE}/shops/${shopId}/listings/${listingId}/images`, {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKeyHeader(apiKey, sharedSecret),
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: fd,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`uploadListingImage failed: ${res.status} ${text}`);
+  }
+}

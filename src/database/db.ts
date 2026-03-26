@@ -261,6 +261,49 @@ export async function upsertPlatformListing(
   log(`Platform listing recorded: ${id1688} on ${platform} = ${platformProductId}`);
 }
 
+/** After Etsy createDraftListing: local row + platform_listings + 1688_source.listing_mappings (correct source product_id). */
+export async function recordEtsyDraftListing(
+  id1688: string,
+  listingId: string,
+  storeId: string
+): Promise<void> {
+  const p = await getPool();
+  await p.execute(`UPDATE products SET etsy_listing_id = ?, status = 'etsy_draft' WHERE id_1688 = ?`, [
+    listingId,
+    id1688,
+  ]);
+  await p.execute(
+    `INSERT INTO platform_listings (product_id, platform, platform_product_id, status)
+     SELECT id, 'etsy', ?, 'draft' FROM products WHERE id_1688 = ?
+     ON DUPLICATE KEY UPDATE platform_product_id = VALUES(platform_product_id), status = 'draft', updated_at = NOW()`,
+    [listingId, id1688]
+  );
+
+  try {
+    const [rows] = await p.execute<RowDataPacket[]>(
+      `SELECT id FROM 1688_source.products WHERE id_1688 = ? LIMIT 1`,
+      [id1688]
+    );
+    const sourceProductId = rows[0]?.id;
+    if (sourceProductId != null) {
+      await p.execute(
+        `INSERT INTO 1688_source.listing_mappings
+         (product_id, source_id, platform, store_id, platform_product_id, status)
+         VALUES (?, ?, 'etsy', ?, ?, 'draft')
+         ON DUPLICATE KEY UPDATE
+           platform_product_id = VALUES(platform_product_id),
+           status = VALUES(status),
+           updated_at = NOW()`,
+        [sourceProductId, id1688, storeId || '', listingId]
+      );
+    }
+  } catch (err: unknown) {
+    logError('recordEtsyDraftListing: listing_mappings (non-fatal)', err);
+  }
+
+  log(`Etsy draft recorded: id_1688=${id1688} listing_id=${listingId}`);
+}
+
 export async function getProductStats(): Promise<{ total: number; byStatus: Record<string, number> }> {
   const p = await getPool();
   const [totalRows] = await p.execute<RowDataPacket[]>('SELECT COUNT(*) as count FROM products');
