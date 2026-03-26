@@ -7,8 +7,8 @@
  *   node dist/tasks/setup-auth.js refresh
  *   node dist/tasks/setup-auth.js status
  *
- * Before `login`: register ETSY_OAUTH_REDIRECT_URI exactly in Etsy app settings
- * (Manage your apps → your app → Redirect URI).
+ * Before `login`: register ETSY_OAUTH_REDIRECT_URI exactly in Etsy app settings.
+ * Use http://localhost:PORT/... — Etsy often returns 400 when saving 127.0.0.1.
  */
 import * as http from 'http';
 import * as path from 'path';
@@ -93,7 +93,7 @@ async function cmdLogin(): Promise<void> {
     throw new Error('Set ETSY_API_KEY and ETSY_SHARED_SECRET in .env');
   }
   const redirectUri =
-    process.env.ETSY_OAUTH_REDIRECT_URI || 'http://127.0.0.1:3456/oauth/callback';
+    process.env.ETSY_OAUTH_REDIRECT_URI || 'http://localhost:3456/oauth/callback';
   const urlObj = new URL(redirectUri);
   const port = parseInt(process.env.ETSY_OAUTH_PORT || urlObj.port || '3456', 10);
   if (!urlObj.hostname || !urlObj.pathname) {
@@ -129,7 +129,7 @@ async function cmdLogin(): Promise<void> {
           res.end();
           return;
         }
-        const host = req.headers.host || `127.0.0.1:${port}`;
+        const host = req.headers.host || `localhost:${port}`;
         const fullUrl = new URL(req.url, `http://${host}`);
         const expectedPath = new URL(redirectUri).pathname;
         if (fullUrl.pathname !== expectedPath) {
@@ -191,8 +191,9 @@ async function cmdLogin(): Promise<void> {
       }
     });
 
-    server.listen(port, '127.0.0.1', () => {
-      log(`Listening on http://127.0.0.1:${port}`);
+    // Omit host so :: / 0.0.0.0 works when the browser resolves "localhost" to IPv6 or IPv4
+    server.listen(port, () => {
+      log(`Listening on port ${port} — redirect must match exactly: ${redirectUri}`);
     });
     server.on('error', reject);
   });

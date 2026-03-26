@@ -68,7 +68,7 @@ node dist/tasks/optimize-copy.js
 
 ### setup-auth.ts (Ping + OAuth)
 
-1. In [Manage your apps](https://www.etsy.com/developers/your-apps), add redirect URI **exactly** `http://127.0.0.1:3456/oauth/callback` (or your `ETSY_OAUTH_REDIRECT_URI`).
+1. In [Manage your apps](https://www.etsy.com/developers/your-apps), add callback URL **exactly** `http://localhost:3456/oauth/callback`. Saving **`http://127.0.0.1:...` often triggers HTTP 400** in Etsy’s dashboard; `localhost` is the fix. If `localhost` still fails, use a temporary **https** URL (e.g. ngrok) and set `ETSY_OAUTH_REDIRECT_URI` to match.
 2. Ensure `ETSY_API_KEY` and `ETSY_SHARED_SECRET` match the dashboard (re-copy after approval if `ping` returns 403).
 3. Run:
    ```bash
