@@ -11,7 +11,9 @@ Import → etsy_autostore (status: imported)
     ↓
 Copy Optimizer → title_etsy, description_etsy, tags_json (status: optimized)
     ↓
-[Future] API Lister → createDraftListing + uploadListingImage + updateListingInventory (status: listed)
+API auth → `setup-auth.js` (ping + OAuth login) → tokens in `data/etsy-tokens.json`
+    ↓
+[Next] API Lister → createDraftListing + uploadListingImage + updateListingInventory (status: listed)
 ```
 
 ## Tasks
@@ -64,7 +66,20 @@ node dist/tasks/import-from-1688source.js
 node dist/tasks/optimize-copy.js
 ```
 
-## Etsy API (Future — needs API credentials)
+### setup-auth.ts (Ping + OAuth)
+
+1. In [Manage your apps](https://www.etsy.com/developers/your-apps), add redirect URI **exactly** `http://127.0.0.1:3456/oauth/callback` (or your `ETSY_OAUTH_REDIRECT_URI`).
+2. Ensure `ETSY_API_KEY` and `ETSY_SHARED_SECRET` match the dashboard (re-copy after approval if `ping` returns 403).
+3. Run:
+   ```bash
+   node dist/tasks/setup-auth.js ping    # openapi-ping → { application_id }
+   node dist/tasks/setup-auth.js login   # local server + browser; writes data/etsy-tokens.json
+   node dist/tasks/setup-auth.js refresh
+   node dist/tasks/setup-auth.js status
+   ```
+4. Set `ETSY_SHOP_ID` in `.env` from the `login` output.
+
+## Etsy API (listing automation)
 
 ### Developer app approval (required before keys work)
 
@@ -77,9 +92,9 @@ When you **Create a New App**, paste a full paragraph that covers:
 3. **Which API features** — e.g. draft listings, listing images, inventory, shop read — and that you will **not** use the API to scrape Etsy broadly, resell access, or automate buyer checkout.
 4. **Compliance** — You follow Etsy’s policies and only list items allowed on Etsy.
 
-After approval, put the new **keystring** and **shared secret** in `.env` and complete OAuth.
+After approval, put the **keystring** and **shared secret** in `.env` and run `setup-auth.js` (see above).
 
-- **Auth**: OAuth 2.0 with PKCE (scopes: listings_r, listings_w, shops_r, shops_w)
+- **Auth**: OAuth 2.0 with PKCE (scopes: listings_r, listings_w, listings_d, shops_r, shops_w)
 - **Create listing**: POST /v3/application/shops/{shop_id}/listings (createDraftListing)
 - **Upload image**: POST /v3/application/shops/{shop_id}/listings/{listing_id}/images
 - **Set inventory**: PUT /v3/application/listings/{listing_id}/inventory

@@ -6,6 +6,7 @@
     "build": "./node_modules/.bin/tsc",
     "task:import": "npm run build && node dist/tasks/import-from-1688source.js",
     "task:optimize": "npm run build && node dist/tasks/optimize-copy.js",
+    "task:auth": "npm run build && node dist/tasks/setup-auth.js",
     "task:taxonomy": "npm run build && node dist/tasks/setup-taxonomy.js"
   },
   "keywords": [
