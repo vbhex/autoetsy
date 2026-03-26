@@ -108,6 +108,30 @@ export async function getMe(
   return { user_id, shop_id, shop_name };
 }
 
+/** https://developers.etsy.com/documentation/reference#operation/getShop */
+export async function getShop(
+  shopId: string | number,
+  accessToken: string,
+  apiKey: string,
+  sharedSecret: string
+): Promise<{ shop_id?: number; shop_name?: string; title?: string }> {
+  const { data, status } = await axios.get<Record<string, unknown>>(`${API_BASE}/shops/${shopId}`, {
+    headers: {
+      'x-api-key': apiKeyHeader(apiKey, sharedSecret),
+      Authorization: `Bearer ${accessToken}`,
+    },
+    validateStatus: () => true,
+  });
+  if (status >= 400) {
+    throw new Error(`getShop failed: ${status} ${JSON.stringify(data)}`);
+  }
+  const shop_id = pickNumericId(data, 'shop_id', 'shopId');
+  const shop_name = [data.shop_name, data.shopName, data.title, data.name]
+    .find((v) => typeof v === 'string' && v.length > 0) as string | undefined;
+  const title = (data.title as string | undefined) || undefined;
+  return { shop_id, shop_name, title };
+}
+
 export async function getShopsForUser(
   userId: string,
   accessToken: string,

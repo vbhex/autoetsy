@@ -17,6 +17,7 @@ import { loadConfig } from '../config';
 import {
   exchangeAuthorizationCode,
   getMe,
+  getShop,
   getShopsForUser,
   openapiPing,
   pickShop,
@@ -90,6 +91,18 @@ async function saveTokensFromResponse(
     );
   }
 
+  if (!shopName) {
+    try {
+      const detail = await getShop(shopId, tokenRes.access_token, cfg.etsy.apiKey, cfg.etsy.sharedSecret);
+      shopName = detail.shop_name || detail.title;
+    } catch {
+      /* keep undefined */
+    }
+  }
+  if (!shopName && cfg.etsy.shopSlug) {
+    shopName = cfg.etsy.shopSlug;
+  }
+
   const file: EtsyTokensFile = {
     access_token: tokenRes.access_token,
     refresh_token: tokenRes.refresh_token,
@@ -102,7 +115,7 @@ async function saveTokensFromResponse(
   writeTokens(projectRoot(), file);
   log(`Saved tokens → ${tokensPath(projectRoot())}`);
   log(`Add to .env: ETSY_SHOP_ID=${file.shop_id}`);
-  log(`Shop: ${file.shop_name} (id ${file.shop_id})`);
+  log(`Shop: ${file.shop_name || '(no name)'} (id ${file.shop_id})`);
 }
 
 async function cmdLogin(): Promise<void> {
