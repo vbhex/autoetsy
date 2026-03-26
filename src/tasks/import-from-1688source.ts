@@ -106,6 +106,37 @@ const CRAFT_AND_NOTION_CATEGORIES = new Set([
 const APPLIANCE_VEHICLE_MAJOR_ELECTRONICS_RE =
   /washing\s*machine|refrigerator|freezer|dishwasher|air\s*conditioner|television|smart\s*tv|microwave\s*oven|electric\s*(vehicle|scooter|bike)|motorcycle|drone|无人机|冰箱|洗衣机|空调|洗碗机|电视机|微波炉|电动车(?!钥匙)|汽车整车|笔记本电脑(?!包|壳|套)|gaming\s*laptop/i;
 
+const SHOE_ACCESSORY_CATEGORIES = new Set([
+  'shoe accessories',
+  'insoles',
+  'shoelaces',
+  'shoe decorations',
+  'shoe charms',
+]);
+
+const PET_ACCESSORY_CATEGORIES = new Set(['pet accessories', 'pet collars', 'pet toys', 'pet bows']);
+
+/** Pet SKU miscategorized as human apparel wholesale. */
+const HUMAN_APPAREL_WHOLESALE_RE =
+  /(men'?s|women'?s|mens|womens)\s+(suit|blazer|dress|jeans|skirt|coat|hoodie|sweater|leggings|jumpsuit)\b|西装|连衣裙|牛仔裤|批发服装|服装批发|wholesale\s+clothing|成衣批发/i;
+
+const CANDLE_AND_FRAGRANCE_CATEGORIES = new Set(['candles', 'home fragrance']);
+
+/** Fixture/lighting SKU with no candle / scent context. */
+const PURE_LIGHTING_FIXTURE_RE =
+  /led\s*strip|smart\s*bulb|ceiling\s*light|chandelier|track\s*light|panel\s*light|吸顶灯|灯带|筒灯|射灯|壁灯|吊灯|台灯(?!蜡)/i;
+
+const CANDLE_OR_SCENT_CONTEXT_RE =
+  /candle|wax|wax\s*melt|scented|aroma|fragrance|diffuser|incense|蠟燭|蜡烛|香薰|精油|喷雾香/i;
+
+const STORAGE_ORGANIZER_CATEGORIES = new Set(['storage', 'organizers', 'storage organizers']);
+
+/** Obvious food / beverage wholesale — not a storage bin. */
+const FOOD_BEVERAGE_WHOLESALE_RE =
+  /wholesale\s+snack|beef\s*jerky|wine|whiskey|vodka|白酒|红酒|零食批发|食品批发|frozen\s+food|海鲜批发/i;
+
+const DISPOSABLE_CATEGORIES = new Set(['disposable items', 'disposable masks', 'disposable slippers']);
+
 function etsyCategoryTitleMismatchReason(
   category: string,
   titleZh: string,
@@ -122,6 +153,24 @@ function etsyCategoryTitleMismatchReason(
   }
   if (CRAFT_AND_NOTION_CATEGORIES.has(cat) && APPLIANCE_VEHICLE_MAJOR_ELECTRONICS_RE.test(blob)) {
     return 'craft/notion category vs appliance/vehicle/major electronics title';
+  }
+  if (
+    SHOE_ACCESSORY_CATEGORIES.has(cat) &&
+    (BEDDING_OR_BED_LINEN_RE.test(blob) || HOME_FURNITURE_MAJOR_APPLIANCE_RE.test(blob) || APPLIANCE_VEHICLE_MAJOR_ELECTRONICS_RE.test(blob))
+  ) {
+    return 'shoe accessory category vs non-footwear title';
+  }
+  if (PET_ACCESSORY_CATEGORIES.has(cat) && HUMAN_APPAREL_WHOLESALE_RE.test(blob)) {
+    return 'pet category vs human apparel title';
+  }
+  if (CANDLE_AND_FRAGRANCE_CATEGORIES.has(cat) && PURE_LIGHTING_FIXTURE_RE.test(blob) && !CANDLE_OR_SCENT_CONTEXT_RE.test(blob)) {
+    return 'candle/fragrance category vs lighting-only title';
+  }
+  if (STORAGE_ORGANIZER_CATEGORIES.has(cat) && FOOD_BEVERAGE_WHOLESALE_RE.test(blob)) {
+    return 'storage category vs food/beverage title';
+  }
+  if (DISPOSABLE_CATEGORIES.has(cat) && APPLIANCE_VEHICLE_MAJOR_ELECTRONICS_RE.test(blob)) {
+    return 'disposable category vs appliance/electronics title';
   }
 
   return null;
