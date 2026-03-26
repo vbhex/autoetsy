@@ -16,6 +16,7 @@ import { URL } from 'url';
 import { loadConfig } from '../config';
 import {
   exchangeAuthorizationCode,
+  getMe,
   getShopsForUser,
   openapiPing,
   pickShop,
@@ -67,18 +68,35 @@ async function saveTokensFromResponse(
   tokenRes: { access_token: string; refresh_token: string; expires_in: number }
 ): Promise<void> {
   const userId = userIdFromAccessToken(tokenRes.access_token);
-  const shops = await getShopsForUser(userId, tokenRes.access_token, cfg.etsy.apiKey, cfg.etsy.sharedSecret);
-  const shop = pickShop(shops, cfg.etsy.shopSlug);
-  if (!shop) {
-    throw new Error('No shops returned for this user — is this the seller account that owns the Etsy shop?');
+  const me = await getMe(tokenRes.access_token, cfg.etsy.apiKey, cfg.etsy.sharedSecret);
+
+  let shopId: string | undefined = me.shop_id != null ? String(me.shop_id) : undefined;
+  let shopName: string | undefined = me.shop_name;
+
+  if (!shopId || cfg.etsy.shopSlug) {
+    const shops = await getShopsForUser(userId, tokenRes.access_token, cfg.etsy.apiKey, cfg.etsy.sharedSecret);
+    const picked = pickShop(shops, cfg.etsy.shopSlug);
+    if (picked) {
+      shopId = String(picked.shop_id);
+      shopName = picked.shop_name || picked.title || shopName;
+    }
   }
+
+  if (!shopId) {
+    throw new Error(
+      `No shop_id for Etsy user_id=${userId}. ` +
+        `Use the Etsy account that **opened Shop Manager** for ${cfg.etsy.shopSlug || 'your shop'} (etsy.com/sell), ` +
+        `or finish opening your shop, then run login again.`
+    );
+  }
+
   const file: EtsyTokensFile = {
     access_token: tokenRes.access_token,
     refresh_token: tokenRes.refresh_token,
     expires_at_ms: Date.now() + tokenRes.expires_in * 1000 - 60_000,
     user_id: userId,
-    shop_id: String(shop.shop_id),
-    shop_name: shop.shop_name || shop.title,
+    shop_id: shopId,
+    shop_name: shopName,
     updated_at: new Date().toISOString(),
   };
   writeTokens(projectRoot(), file);

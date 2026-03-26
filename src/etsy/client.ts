@@ -71,6 +71,43 @@ export interface ShopSummary {
   url?: string;
 }
 
+/** https://developers.etsy.com/documentation/reference#operation/getMe */
+export interface MeResponse {
+  user_id?: number;
+  shop_id?: number;
+  shop_name?: string;
+}
+
+function pickNumericId(obj: Record<string, unknown>, ...keys: string[]): number | undefined {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === 'number' && !Number.isNaN(v)) return v;
+    if (typeof v === 'string' && /^\d+$/.test(v)) return parseInt(v, 10);
+  }
+  return undefined;
+}
+
+export async function getMe(
+  accessToken: string,
+  apiKey: string,
+  sharedSecret: string
+): Promise<MeResponse> {
+  const { data, status } = await axios.get<Record<string, unknown>>(`${API_BASE}/users/me`, {
+    headers: {
+      'x-api-key': apiKeyHeader(apiKey, sharedSecret),
+      Authorization: `Bearer ${accessToken}`,
+    },
+    validateStatus: () => true,
+  });
+  if (status >= 400) {
+    throw new Error(`getMe failed: ${status} ${JSON.stringify(data)}`);
+  }
+  const user_id = pickNumericId(data, 'user_id', 'userId');
+  const shop_id = pickNumericId(data, 'shop_id', 'shopId');
+  const shop_name = (data.shop_name || data.shopName) as string | undefined;
+  return { user_id, shop_id, shop_name };
+}
+
 export async function getShopsForUser(
   userId: string,
   accessToken: string,
