@@ -64,11 +64,67 @@ const HAIR_ACCESSORY_CATEGORIES = new Set([
 const BEDDING_OR_BED_LINEN_RE =
   /duvet|bedding|quilt|comforter|sheet\s*set|pillowcase|mattress|coverlet|bedspread|four\s*-?\s*piece|四件套|被套|床单|枕套|被芯/i;
 
-function isLikelyEtsyCategoryTitleMismatch(category: string, titleZh: string, titleEn: string): boolean {
+/** Phone accessory category but title is clearly furniture, major appliance, or room sets — not a phone SKU. */
+const PHONE_ACCESSORY_CATEGORIES = new Set([
+  'phone cases',
+  'phone case',
+  'phone accessories',
+  'phone holders',
+  'phone straps',
+]);
+
+const HOME_FURNITURE_MAJOR_APPLIANCE_RE =
+  /sofa|furniture|wardrobe|bookshelf|tv\s*stand|office\s*desk|kitchen\s*cabinet|refrigerator|washing\s*machine|dishwasher|air\s*conditioner|range\s*hood|microwave\s*oven|curtain|窗帘|橱柜|沙发|床垫|床架|书柜|办公桌|办公椅|油烟机|冰箱|洗衣机|空调|洗碗机|微波炉|电视机(?!壳)|婚纱|wedding\s+dress|四件套|被套/i;
+
+/** Craft / notion category but title is clearly a vehicle, large appliance, or finished consumer electronics — not supplies. */
+const CRAFT_AND_NOTION_CATEGORIES = new Set([
+  'craft supplies',
+  'diy craft supplies',
+  'beads',
+  'buttons',
+  'lace',
+  'lace trim',
+  'ribbon',
+  'fabric',
+  'jewelry findings',
+  'jewelry components',
+  'jewelry supplies',
+  'diy jewelry materials',
+  'sewing notions',
+  'zippers',
+  'snaps',
+  'elastic',
+  'thread',
+  'stickers',
+  'patches',
+  'iron-ons',
+  'embroidered patches',
+  'washi tape',
+  'stationery',
+]);
+
+const APPLIANCE_VEHICLE_MAJOR_ELECTRONICS_RE =
+  /washing\s*machine|refrigerator|freezer|dishwasher|air\s*conditioner|television|smart\s*tv|microwave\s*oven|electric\s*(vehicle|scooter|bike)|motorcycle|drone|无人机|冰箱|洗衣机|空调|洗碗机|电视机|微波炉|电动车(?!钥匙)|汽车整车|笔记本电脑(?!包|壳|套)|gaming\s*laptop/i;
+
+function etsyCategoryTitleMismatchReason(
+  category: string,
+  titleZh: string,
+  titleEn: string
+): string | null {
   const cat = (category || '').toLowerCase().trim();
-  if (!HAIR_ACCESSORY_CATEGORIES.has(cat)) return false;
   const blob = `${titleZh || ''}\n${titleEn || ''}`;
-  return BEDDING_OR_BED_LINEN_RE.test(blob);
+
+  if (HAIR_ACCESSORY_CATEGORIES.has(cat) && BEDDING_OR_BED_LINEN_RE.test(blob)) {
+    return 'hair category vs bedding/home textile title';
+  }
+  if (PHONE_ACCESSORY_CATEGORIES.has(cat) && (BEDDING_OR_BED_LINEN_RE.test(blob) || HOME_FURNITURE_MAJOR_APPLIANCE_RE.test(blob))) {
+    return 'phone category vs home/furniture/appliance title';
+  }
+  if (CRAFT_AND_NOTION_CATEGORIES.has(cat) && APPLIANCE_VEHICLE_MAJOR_ELECTRONICS_RE.test(blob)) {
+    return 'craft/notion category vs appliance/vehicle/major electronics title';
+  }
+
+  return null;
 }
 
 async function main() {
@@ -140,8 +196,9 @@ async function main() {
         }
         const en = enRows[0];
 
-        if (isLikelyEtsyCategoryTitleMismatch(src.category, src.title_zh || '', en.title_en || '')) {
-          log(`  [SKIP] Category/title mismatch (e.g. bedding vs hair): ${src.id_1688}`);
+        const mismatchReason = etsyCategoryTitleMismatchReason(src.category, src.title_zh || '', en.title_en || '');
+        if (mismatchReason) {
+          log(`  [SKIP] Category/title mismatch (${mismatchReason}): ${src.id_1688}`);
           mismatchSkipped++;
           continue;
         }
