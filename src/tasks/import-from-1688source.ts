@@ -8,7 +8,7 @@
  *   - Reads ae_enriched AND ae_exported (same product can list on both platforms)
  *   - JOINs authorized_products for brand safety
  *   - Does NOT update 1688_source.products.status (non-destructive)
- *   - Filters to Etsy-eligible categories only
+ *   - Filters to Etsy Phase 1 brand-safe categories only
  *   - Maps categories via CATEGORY_TAXONOMY_MAP instead of CATEGORY_SHEET_MAP
  *
  * Run on Main Computer (local DB) or China MacBook:
@@ -19,7 +19,7 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import path from 'path';
-import { ETSY_ELIGIBLE_CATEGORIES, CATEGORY_TAXONOMY_MAP } from '../models/product';
+import { ETSY_BRAND_SAFE_CATEGORIES, CATEGORY_TAXONOMY_MAP } from '../models/product';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
@@ -45,10 +45,30 @@ function parseArgs(): { limit: number } {
   return { limit };
 }
 
-function isEtsyEligible(category: string): boolean {
+function isEtsyBrandSafe(category: string): boolean {
   if (!category) return false;
   const lower = category.toLowerCase().trim();
-  return ETSY_ELIGIBLE_CATEGORIES.has(lower);
+  return ETSY_BRAND_SAFE_CATEGORIES.has(lower);
+}
+
+/** 1688 `category` says hair accessory but title is clearly home textiles / bedding. */
+const HAIR_ACCESSORY_CATEGORIES = new Set([
+  'hair accessories',
+  'hair clips',
+  'hair claws',
+  'headbands',
+  'scrunchies',
+  'hair accessories set',
+]);
+
+const BEDDING_OR_BED_LINEN_RE =
+  /duvet|bedding|quilt|comforter|sheet\s*set|pillowcase|mattress|coverlet|bedspread|four\s*-?\s*piece|四件套|被套|床单|枕套|被芯/i;
+
+function isLikelyEtsyCategoryTitleMismatch(category: string, titleZh: string, titleEn: string): boolean {
+  const cat = (category || '').toLowerCase().trim();
+  if (!HAIR_ACCESSORY_CATEGORIES.has(cat)) return false;
+  const blob = `${titleZh || ''}\n${titleEn || ''}`;
+  return BEDDING_OR_BED_LINEN_RE.test(blob);
 }
 
 async function main() {
@@ -68,7 +88,11 @@ async function main() {
   await conn.execute(`CREATE DATABASE IF NOT EXISTS etsy_autostore CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
   log('Database etsy_autostore ready');
 
-  let imported = 0, skipped = 0, failed = 0, categorySkipped = 0;
+  let imported = 0,
+    skipped = 0,
+    failed = 0,
+    categorySkipped = 0,
+    mismatchSkipped = 0;
 
   try {
     // Get all listing-ready products: ae_enriched OR ae_exported, AND authorized
@@ -86,8 +110,8 @@ async function main() {
 
     for (const src of sourceProducts) {
       try {
-        // Filter: Etsy-eligible categories only
-        if (!isEtsyEligible(src.category)) {
+        // Filter: Etsy Phase 1 brand-safe categories only
+        if (!isEtsyBrandSafe(src.category)) {
           categorySkipped++;
           continue;
         }
@@ -115,6 +139,12 @@ async function main() {
           continue;
         }
         const en = enRows[0];
+
+        if (isLikelyEtsyCategoryTitleMismatch(src.category, src.title_zh || '', en.title_en || '')) {
+          log(`  [SKIP] Category/title mismatch (e.g. bedding vs hair): ${src.id_1688}`);
+          mismatchSkipped++;
+          continue;
+        }
 
         // Get raw data
         const [rawRows] = await conn.execute<any[]>(
@@ -314,6 +344,7 @@ async function main() {
   console.log(`  imported=${imported}`);
   console.log(`  skipped=${skipped} (already imported or missing data)`);
   console.log(`  category_filtered=${categorySkipped} (not Etsy-eligible)`);
+  console.log(`  mismatch_filtered=${mismatchSkipped} (category vs title sanity)`);
   console.log(`  failed=${failed}`);
   console.log(`========================================`);
 }
