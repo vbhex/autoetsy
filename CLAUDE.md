@@ -66,6 +66,19 @@ node dist/tasks/optimize-copy.js
 
 ## Etsy API (Future — needs API credentials)
 
+### Developer app approval (required before keys work)
+
+Etsy reviews every app. If the use case is too short or vague, the app may be **banned** with: *"Missing clear and detailed use case or explanation of need."*
+
+When you **Create a New App**, paste a full paragraph that covers:
+
+1. **Who you are** — Seller account, shop name and URL (e.g. `blueideagoods` / storefront link).
+2. **What the app does** — Connects **only your shop** to your internal tools to create/update **your own** listings from a product database (titles, descriptions, images, inventory you already own or have rights to use).
+3. **Which API features** — e.g. draft listings, listing images, inventory, shop read — and that you will **not** use the API to scrape Etsy broadly, resell access, or automate buyer checkout.
+4. **Compliance** — You follow Etsy’s policies and only list items allowed on Etsy.
+
+After approval, put the new **keystring** and **shared secret** in `.env` and complete OAuth.
+
 - **Auth**: OAuth 2.0 with PKCE (scopes: listings_r, listings_w, shops_r, shops_w)
 - **Create listing**: POST /v3/application/shops/{shop_id}/listings (createDraftListing)
 - **Upload image**: POST /v3/application/shops/{shop_id}/listings/{listing_id}/images

@@ -10,6 +10,12 @@ export interface Config {
     apiKey: string;
     sharedSecret: string;
     shopId: string;
+    /** Public storefront, e.g. https://blueideagoods.etsy.com */
+    storefrontUrl: string;
+    /** Shop slug (subdomain), e.g. blueideagoods */
+    shopSlug: string;
+    /** Canonical www.etsy.com/shop/... URL */
+    shopUrl: string;
     sellerLoginUrl: string;
   };
   pricing: {
@@ -58,6 +64,9 @@ export function loadConfig(): Config {
       apiKey: getEnvVar('ETSY_API_KEY', ''),
       sharedSecret: getEnvVar('ETSY_SHARED_SECRET', ''),
       shopId: getEnvVar('ETSY_SHOP_ID', ''),
+      storefrontUrl: getEnvVar('ETSY_STOREFRONT_URL', ''),
+      shopSlug: getEnvVar('ETSY_SHOP_SLUG', ''),
+      shopUrl: getEnvVar('ETSY_SHOP_URL', ''),
       sellerLoginUrl: getEnvVar('ETSY_SELLER_LOGIN_URL', 'https://www.etsy.com/signin'),
     },
     pricing: {
