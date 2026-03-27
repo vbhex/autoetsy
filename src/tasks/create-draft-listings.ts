@@ -229,7 +229,7 @@ async function main(): Promise<void> {
       params.append('title', title);
       params.append('description', desc);
       params.append('price', String(priceMinor));
-      params.append('who_made', 'someone_else');
+      params.append('who_made', 'i_did');
       params.append('when_made', whenMade);
       params.append('taxonomy_id', String(taxonomyId));
       params.append('shipping_profile_id', String(shippingProfileId));
