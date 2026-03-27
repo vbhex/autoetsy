@@ -38,6 +38,7 @@ export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
   'hair accessories',
   'hair clips',
   'hair claws',
+  'hair pins',
   'headbands',
   'scrunchies',
   'hair accessories set',
