@@ -1,16 +1,13 @@
 /**
- * Etsy Phase 1 brand-safe categories only.
+ * Etsy-eligible categories — brand-safe accessories + Etsy-friendly products.
  *
- * Source of truth: documents/BRAND_SAFE_CATEGORIES.md
- *
- * IMPORTANT:
- * - Etsy must NOT import broader "Etsy-friendly" categories like hats, watches,
- *   eyewear, wallets, belts, shoes, or finished fashion jewelry during Phase 1.
- * - This set is intentionally narrower than "things that might sell on Etsy".
- * - Only categories that fit the documented brand-safe strategy belong here.
+ * Includes both Phase 1 brand-safe craft/DIY categories AND broader accessories
+ * that are authorized through the pipeline and sell well on Etsy.
  */
 
 export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
+  // ── Phase 1 brand-safe (craft / DIY / components) ──
+
   // Phone cases / accessories
   'phone cases',
   'phone case',
@@ -116,6 +113,75 @@ export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
   'stationery',
   'washi tape',
   'pen holders',
+
+  // ── Expanded Etsy-friendly accessories ──
+
+  // Hats & caps
+  'bucket hats',
+  'baseball caps',
+  'beanies',
+  'cowboy hats',
+
+  // Scarves
+  'winter scarves',
+  'sun scarves',
+  'silk scarves',
+
+  // Sunglasses & eyewear
+  'polarized sunglasses',
+  'blue light glasses',
+  'optical frames',
+  'reading glasses',
+  'sports sunglasses',
+
+  // Bags & wallets
+  'fashion wallets',
+  'waist packs',
+  'coin purses',
+
+  // Finished jewelry
+  'fashion earrings',
+  'fashion bracelets',
+  'fashion necklaces',
+  'fashion rings',
+
+  // Watches
+  'quartz watches',
+  'digital watches',
+
+  // Shoes
+  'sneakers',
+  'mens casual shoes',
+  'womens fashion shoes',
+
+  // Apparel accessories (from 1688 pipeline)
+  'suspendersbracesposturecor',
+  'handkerchiefs',
+  'pocketsquares',
+  'sashes',
+  'cummerbunds',
+  'kneesleevelegwarmer',
+  'tiebucklescufflinks',
+  'tiechains',
+  'oversleeve',
+  'collarstays',
+  'tieclip',
+  'tieclipcufflinks',
+  'tieset',
+  'ties',
+  'shoulderstrap',
+  'garmentaccessories',
+  'accessories',
+
+  // Fitness / yoga
+  'yoga mats',
+  'fitness gloves',
+
+  // Water bottles
+  'water bottles',
+
+  // Family matching
+  'family matching outfits',
 ]);
 
 /**
@@ -231,6 +297,73 @@ export const CATEGORY_TAXONOMY_MAP: Record<string, { taxonomyId: number; etsyCat
   'stationery':         { taxonomyId: 0, etsyCategory: 'Paper & Party Supplies' },
   'washi tape':         { taxonomyId: 0, etsyCategory: 'Paper & Party Supplies > Paper > Stickers, Labels & Tags' },
   'pen holders':        { taxonomyId: 0, etsyCategory: 'Home & Living > Office > Office Storage' },
+
+  // ── Expanded categories ──
+
+  // Hats & caps
+  'bucket hats':        { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Bucket Hats' },
+  'baseball caps':      { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Baseball & Trucker Caps' },
+  'beanies':            { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Winter Hats' },
+  'cowboy hats':        { taxonomyId: 0, etsyCategory: 'Accessories > Hats & Caps > Cowboy Hats' },
+
+  // Scarves
+  'winter scarves':     { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps > Scarves' },
+  'sun scarves':        { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps > Scarves' },
+  'silk scarves':       { taxonomyId: 0, etsyCategory: 'Accessories > Scarves & Wraps > Scarves' },
+
+  // Sunglasses & eyewear
+  'polarized sunglasses': { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Sunglasses' },
+  'blue light glasses': { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyeglasses' },
+  'optical frames':     { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyeglasses' },
+  'reading glasses':    { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Eyeglasses' },
+  'sports sunglasses':  { taxonomyId: 0, etsyCategory: 'Accessories > Sunglasses & Eyewear > Sunglasses' },
+
+  // Bags & wallets
+  'waist packs':        { taxonomyId: 0, etsyCategory: 'Bags & Purses > Fanny Packs' },
+  'coin purses':        { taxonomyId: 0, etsyCategory: 'Bags & Purses > Wallets & Money Clips > Coin Purses' },
+
+  // Finished jewelry
+  'fashion earrings':   { taxonomyId: 0, etsyCategory: 'Jewelry > Earrings' },
+  'fashion necklaces':  { taxonomyId: 0, etsyCategory: 'Jewelry > Necklaces' },
+  'fashion rings':      { taxonomyId: 0, etsyCategory: 'Jewelry > Rings' },
+
+  // Watches
+  'quartz watches':     { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Wrist Watches' },
+  'digital watches':    { taxonomyId: 0, etsyCategory: 'Jewelry > Watches > Wrist Watches' },
+
+  // Shoes
+  'sneakers':           { taxonomyId: 0, etsyCategory: 'Shoes > Athletic Shoes > Sneakers' },
+  'mens casual shoes':  { taxonomyId: 0, etsyCategory: 'Shoes > Men\'s Shoes' },
+  'womens fashion shoes': { taxonomyId: 0, etsyCategory: 'Shoes > Women\'s Shoes' },
+
+  // Apparel accessories
+  'suspendersbracesposturecor': { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders > Suspenders' },
+  'handkerchiefs':      { taxonomyId: 0, etsyCategory: 'Accessories > Handkerchiefs' },
+  'pocketsquares':      { taxonomyId: 0, etsyCategory: 'Accessories > Handkerchiefs' },
+  'sashes':             { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders' },
+  'cummerbunds':        { taxonomyId: 0, etsyCategory: 'Accessories > Belts & Suspenders' },
+  'kneesleevelegwarmer': { taxonomyId: 0, etsyCategory: 'Accessories > Leg Warmers' },
+  'tiebucklescufflinks': { taxonomyId: 0, etsyCategory: 'Accessories > Ties > Cuff Links & Tie Clips' },
+  'tiechains':          { taxonomyId: 0, etsyCategory: 'Accessories > Ties > Cuff Links & Tie Clips' },
+  'oversleeve':         { taxonomyId: 0, etsyCategory: 'Accessories > Gloves & Mittens' },
+  'collarstays':        { taxonomyId: 0, etsyCategory: 'Accessories > Ties > Cuff Links & Tie Clips' },
+  'tieclip':            { taxonomyId: 0, etsyCategory: 'Accessories > Ties > Cuff Links & Tie Clips' },
+  'tieclipcufflinks':   { taxonomyId: 0, etsyCategory: 'Accessories > Ties > Cuff Links & Tie Clips' },
+  'tieset':             { taxonomyId: 0, etsyCategory: 'Accessories > Ties' },
+  'ties':               { taxonomyId: 0, etsyCategory: 'Accessories > Ties' },
+  'shoulderstrap':      { taxonomyId: 0, etsyCategory: 'Bags & Purses > Bag Accessories' },
+  'garmentaccessories': { taxonomyId: 0, etsyCategory: 'Accessories' },
+  'accessories':        { taxonomyId: 0, etsyCategory: 'Accessories' },
+
+  // Fitness / yoga
+  'yoga mats':          { taxonomyId: 0, etsyCategory: 'Home & Living > Spirituality & Religion > Meditation' },
+  'fitness gloves':     { taxonomyId: 0, etsyCategory: 'Accessories > Gloves & Mittens' },
+
+  // Water bottles
+  'water bottles':      { taxonomyId: 0, etsyCategory: 'Home & Living > Kitchen & Dining > Drink & Barware > Drinkware' },
+
+  // Family matching
+  'family matching outfits': { taxonomyId: 0, etsyCategory: 'Clothing > Family Matching Outfits' },
 };
 
 export interface ProductRecord {
