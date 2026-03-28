@@ -63,6 +63,8 @@ export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
   'patches',
   'iron-ons',
   'embroidered patches',
+  'punk patches',
+  'retro patches',
 
   // Keychains / bag charms
   'keychains',
@@ -70,14 +72,40 @@ export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
   'retro keychains',
   'punk keychains',
 
-  // Retro / punk jewelry findings
+  // Retro / punk jewelry & findings
   'vintage brooches',
   'punk jewelry findings',
   'retro body chain',
+  'retro enamel pins',
+  'punk chokers',
+  'punk earrings',
+  'retro earrings',
+  'punk rings',
+  'punk bracelets',
+  'boho anklets',
+  'steampunk accessories',
 
-  // Candles / home fragrance
+  // Candles / home fragrance / decor
   'candles',
   'home fragrance',
+  'gothic candles',
+  'gothic home decor',
+
+  // Retro stationery & craft supplies
+  'vintage washi tape',
+  'retro bookmarks',
+  'vintage journals',
+  'vintage pencil case',
+
+  // Retro phone cases
+  'retro phone cases',
+
+  // Retro socks
+  'retro socks',
+
+  // Retro bags
+  'vintage coin purses',
+  'retro tote bags',
 
   // Storage / organizers
   'storage',
