@@ -39,6 +39,10 @@ export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
   'headbands',
   'scrunchies',
   'hair accessories set',
+  // Retro / punk / vintage hair
+  'retro hair clips',
+  'punk hair accessories',
+  'vintage headbands',
 
   // Shoe accessories
   'shoe accessories',
@@ -63,6 +67,13 @@ export const ETSY_BRAND_SAFE_CATEGORIES: Set<string> = new Set([
   // Keychains / bag charms
   'keychains',
   'bag charms',
+  'retro keychains',
+  'punk keychains',
+
+  // Retro / punk jewelry findings
+  'vintage brooches',
+  'punk jewelry findings',
+  'retro body chain',
 
   // Candles / home fragrance
   'candles',
