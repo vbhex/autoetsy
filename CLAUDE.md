@@ -1,5 +1,17 @@
 # Etsy Auto-Lister
 
+> ## 🧠 Knowledge Distillation Strategy
+>
+> AutoStore's architectural bet: encode every workflow as a deterministic macro tool so weak models (qwen-plus, glm-4-flash) only need intent matching — multi-step reasoning is pre-computed by Claude offline.
+>
+> Before ending any session, read:
+> - `rules/KNOWLEDGE_DISTILLATION_STRATEGY.md` — the master plan + macro roadmap
+> - `rules/CONTRIBUTING_PLATFORM_KNOWLEDGE.md` — where each kind of knowledge belongs
+> - `rules/COMPUTER_USE_STRATEGY.md` — annotated screenshots + macro-tool rationale
+>
+> **Rule:** if you spent 3+ tool calls on a workflow that could be one macro, encode it in `mac/AutoStore/Sources/Services/PlatformKnowledge.swift` + register the tool in `LocalLLMService.swift` before committing. Push so the next AutoStore release ships with that knowledge.
+
+
 Etsy product listing automation — imports authorized products from `1688_source`, optimizes copy for Etsy SEO, and lists via Etsy Open API v3.
 
 ## Pipeline
